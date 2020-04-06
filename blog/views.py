@@ -1,15 +1,20 @@
 from django.shortcuts import render
 from .models import Post
-# Create your views here.
+from django.views.generic import ListView
 
+class PostList(ListView):                          #포스트 리스트로 보여줌
+    model = Post
 
-def index(request):
-    posts = Post.objects.all()
+    def get_queryset(self):                         #포스트 역순으로
+        return Post.objects.order_by('-created')
 
-    return render(
-        request,
-        'blog/index.html',
-        {
-            'posts': posts,
-        }
-    )
+# def index(request):
+#     posts = Post.objects.all()
+#
+#     return render(
+#         request,
+#         'blog/index.html',
+#         {
+#             'posts': posts,
+#         }
+#    )
