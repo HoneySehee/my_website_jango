@@ -96,9 +96,10 @@ class TestModel(TestCase):
 class TestView(TestCase):
     def setUp(self):
         self.client = Client()
-        self.author_000 = User.objects.create(username='smith', password='nopass')
+        self.author_000 = User.objects.create_user(username='smith', password='nopass')
+        self.user_obama = User.objects.create_user(username='obama', password='nopass')
 
-    def check_navbar(self,soup):
+    def check_navbar(self, soup):
         navbar = soup.find('div', id='navbar')
         self.assertIn('Blog', navbar.text)
         self.assertIn('About Me', navbar.text)
@@ -166,10 +167,13 @@ class TestView(TestCase):
         self.assertIn('#america', post_card_000.text)
 
     def test_post_detail(self):
+        category_politics = create_category(name='정치/사회')
+
         post_000 = create_post(
             title='The First post',
             content='show me the money',
             author=self.author_000,
+            category=category_politics
         )
 
         tag_america = create_tag(name='america')
@@ -180,7 +184,6 @@ class TestView(TestCase):
             title='The Second post',
             content='show me the money Second',
             author=self.author_000,
-            category=create_category(name='정치/사회')
         )
 
         self.assertGreater(Post.objects.count(), 0)
@@ -209,6 +212,30 @@ class TestView(TestCase):
 
         # Tag
         self.assertIn('#america', main_div.text)
+
+        self.assertIn(category_politics.name, main_div.text)  # category가 main_div에 있다
+        self.assertNotIn('EDIT', main_div.text) # edit버튼이 로그인하지 않는경우 보이지 않는다
+
+        login_success = self.client.login(username='smith', password='nopass') # login 한 경우
+        self.assertTrue(login_success)
+        response = self.client.get(post_000_url)
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_div = soup.find('div', id='main-div')
+        self.assertEqual(post_000.author, self.author_000)
+        self.assertIn('EDIT', main_div.text)
+
+        login_success = self.client.login(username='obama', password='nopass')  # login 한 경우
+        self.assertTrue(login_success)
+        response = self.client.get(post_000_url)
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_div = soup.find('div', id='main-div')
+        self.assertEqual(post_000.author, self.author_000)
+        self.assertNotIn('EDIT', main_div.text)
+
 
     def test_post_list_by_category(self):
         category_politics = create_category(name='정치/사회')
