@@ -236,7 +236,6 @@ class TestView(TestCase):
         self.assertEqual(post_000.author, self.author_000)
         self.assertNotIn('EDIT', main_div.text)
 
-
     def test_post_list_by_category(self):
         category_politics = create_category(name='정치/사회')
 
@@ -314,10 +313,27 @@ class TestView(TestCase):
 
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        main_div = soup.find('div', id='main_div')
+        main_div = soup.find('div', id='main-div')
         blog_h1 = main_div.find('h1', id='blog-list-title')
         self.assertIn('#{}'.format(tag_000.name), blog_h1.text)
         self.assertIn(post_000.title, main_div.text)
         self.assertNotIn(post_001.title, main_div.text)
 
+    def test_post_update(self):
+        post_000 = create_post(
+            title='The First post',
+            content='show me the money',
+            author=self.author_000,
+        )
+
+        self.assertEqual(post_000.get_update_url(), post_000.get_absolute_url() + 'update/')
+
+        response = self.client.get(post_000.get_update_url())
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_div = soup.find('div', id='main-div')
+
+        self.assertNotIn('create', main_div.text)
+        self.assertNotIn('author', main_div.text)
 
