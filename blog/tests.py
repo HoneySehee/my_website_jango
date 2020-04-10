@@ -391,3 +391,27 @@ class TestView(TestCase):
         self.assertNotIn('create', main_div.text)
         self.assertNotIn('author', main_div.text)
 
+    def test_new_comment(self):
+        post_000 = create_post(
+            title='The First post',
+            content='show me the money',
+            author=self.author_000,
+        )
+
+        login_success = self.client.login(username='smith', password='nopass') # login 한 경우
+        self.assertTrue(login_success)
+        
+        response = self.client.post(
+            post_000.get_absolute_url() + 'new_comment/',
+            {'text': 'We are Horde'},
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_div = soup.find('div', id='main-div')
+        self.assertIn(post_000.title, main_div.text)
+        self.assertIn('We are Horde', main_div.text)
+
+
+
