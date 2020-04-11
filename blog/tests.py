@@ -458,6 +458,49 @@ class TestView(TestCase):
 
         self.assertNotIn('obama', main_div.text)
 
+    def test_edit_comment(self):
+        post_000 = create_post(
+            title='The First post',
+            content='show me the money',
+            author=self.author_000,
+        )
+
+        comment_000 = create_comment(post_000, text='i am president of the us', author=self.user_obama)
+        comment_001 = create_comment(post_000, text='a test comment', author=self.author_000)
+
+        #without login
+        with self.assertRaises(PermissionError):
+            response = self.client.get('/blog/edit_comment/{}/'.format(comment_000.pk))
+
+        #login as
+        login_success = self.client.login(username='smith', password='nopass')
+        self.assertTrue(login_success)
+        with self.assertRaises(PermissionError):
+            response = self.client.get('/blog/edit_comment/{}/'.format(comment_000.pk))
+
+        #obama
+        login_success = self.client.login(username='obama', password='nopass')
+        self.assertTrue(login_success)
+        response = self.client.get('/blog/edit_comment/{}/'.format(comment_000.pk))
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertIn('Edit Comment: ', soup.body.h3)
+
+        response = self.client.post(
+            '/blog/edit_comment/{}/'.format(comment_000.pk),
+            {'text': 'power over whelming'},
+            follow=True
+        )
+
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertNotIn('i am president of the us', soup.body.text)
+        self.assertIn('power over whelming', soup.body.text)
+
+
+
+
 
 
 

@@ -114,6 +114,17 @@ def new_comment(request, pk):
         return redirect('/blog')
 
 
+class CommentUpdate(UpdateView):
+    model = Comment
+    form_class = CommentForm
+
+    def get_object(self, queryset=None):
+        comment = super(CommentUpdate, self).get_object()
+        if comment.author != self.request.user:
+            raise PermissionError('You Can Not Be Modified')
+        return comment
+
+
 def delete_comment(request, pk):
     comment = Comment.objects.get(pk=pk)
     post = comment.post
@@ -121,7 +132,7 @@ def delete_comment(request, pk):
         comment.delete()
         return redirect(post.get_absolute_url() + '#comment-list')
     else:
-        raise PermissionError('You Cant Delete Comment!')
+        raise PermissionError('You Can Not Delete Comment')
 
 # class CommentDelete(DeleteView):
 #     model = Comment
