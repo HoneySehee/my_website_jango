@@ -114,29 +114,27 @@ def new_comment(request, pk):
         return redirect('/blog')
 
 
-class CommentDelete(DeleteView):
-    model = Comment
+def delete_comment(request, pk):
+    comment = Comment.objects.get(pk=pk)
+    post = comment.post
+    if request.user == comment.author:
+        comment.delete()
+        return redirect(post.get_absolute_url() + '#comment-list')
+    else:
+        raise PermissionError('You Cant Delete Comment!')
 
-    def get_object(self, queryset=None):
-        comment = super(CommentDelete, self).get_object()
-        if comment.author != self.request.user:
-            raise PermissionError
-        return comment
-
-    def get_success_url(self):
-        post = self.get_object().post
-        return post.get_absolute_url() + '#comment-list'
-
-
-# def delete_comment(request, pk):
-#     comment = Comment.objects.get(pk=pk)
-#     post = comment.post
-#     if request.user == comment.author:
-#         comment.delete()
-#         return redirect(post.get_absolute_url() + '#comment-list')
-#     else:
-#         return redirect('/blog/')
-
+# class CommentDelete(DeleteView):
+#     model = Comment
+#
+#     def get_object(self, queryset=None):
+#         comment = super(CommentDelete, self).get_object()
+#         if comment.author != self.request.user:
+#             raise PermissionError
+#         return comment
+#
+#     def get_success_url(self):
+#         post = self.get_object().post
+#         return post.get_absolute_url() + '#comment-list'
 
 
 
