@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.twitter',
     'markdownx',
     'crispy_forms',
+
+    'basecamp'
 ]
 
 MIDDLEWARE = [
