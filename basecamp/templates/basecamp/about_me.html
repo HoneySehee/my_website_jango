@@ -1,7 +1,27 @@
 {% extends 'basecamp/base_full.html' %}
-
+{% load static %}
 {% block content %}
-    <div class="container">
-        <h1>About Me</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-9">
+            <h1 class="my-3">About Me</h1>
+            <span style="font-family: meiryo;"><h3 class="my-3">こんにちは プログラマーを目指しているパクジョンミンです</h3></span>
+
+            <span style="font-family: meiryo;"><h5 class="my-3">Pythonでの新しい仕事を探しています</h5></span>
+            <span style="font-family: meiryo;"><p>宜しくお願い致します</p></span>
+        </div>
+        <div class="col-md">
+            <img class="img-fluid" src="{% static 'basecamp/images/man.jpg' %}"/>
+        </div>
     </div>
+    <div class="row">
+        <div class="col-md-3">
+            <img class="img-fluid" src="{% static 'basecamp/images/man.jpg' %}"/>
+        </div>
+        <div class="col-md">
+            <h1 class="my-3">Contact Me</h1>
+            <h4>E-mail: <small>honeysehee@gmail.com</small></h4>
+        </div>
+    </div>
+</div>
 {% endblock %}
