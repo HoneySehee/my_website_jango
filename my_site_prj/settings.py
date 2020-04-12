@@ -132,7 +132,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 ACCOUNT_EMAIL_REQUIRED = True
-
+ACCOUNT_EMAIL_VERIFICATION = 'None'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
