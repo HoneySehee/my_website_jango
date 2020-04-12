@@ -95,8 +95,8 @@ class TestModel(TestCase):
 
         self.assertEqual(post_000.tags.count(), 2)  # post는 여러개의 tag를 가질수 있다
         self.assertEqual(tag_001.post_set.count(), 2)  # 하나의 tag는 여러개의 post에 붙을 수 있다
-        self.assertEqual(tag_001.post_set.first(), post_000)
-        self.assertEqual(tag_001.post_set.last(), post_001)
+        self.assertEqual(tag_001.post_set.first(), post_001)
+        self.assertEqual(tag_001.post_set.last(), post_000)
 
     def test_post(self):
         category = create_category()
@@ -526,7 +526,30 @@ class TestView(TestCase):
         self.assertNotIn('i am president of the us', soup.body.text)
         self.assertIn('power over whelming', soup.body.text)
 
+    def test_search(self):
+        post_000 = create_post(
+            title='Stay Fool, Stay Hungry',
+            content='Amazing',
+            author=self.author_000
+        )
 
+        post_001 = create_post(
+            title='trump said',
+            content='make america great again',
+            author=self.author_000
+        )
+
+        response = self.client.get('/blog/search/Stay Fool/')
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertIn(post_000.title, soup.body.text)
+        self.assertNotIn(post_001.title, soup.body.text)
+
+        response = self.client.get('/blog/search/make america/')
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertIn(post_001.title, soup.body.text)
+        self.assertNotIn(post_000.title, soup.body.text)
 
 
 
