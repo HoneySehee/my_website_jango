@@ -40,7 +40,7 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=True)
 
-    category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag, blank=True)
 
     class Meta:
