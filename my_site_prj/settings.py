@@ -50,7 +50,7 @@ INSTALLED_APPS = [
 
     'basecamp'
 ]
-SITE_ID = 1
+SITE_IDE = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
